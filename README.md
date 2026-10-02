@@ -1,36 +1,45 @@
+# ft_printf — `printf` re-implemented in C
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ef137d4d3b324b9fb907ba5a8e0a788c)](https://www.codacy.com/manual/eelaazmi/ft_printf_42_cursus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Alcheemiist/ft_printf_42_cursus&amp;utm_campaign=Badge_Grade)
+A from-scratch re-implementation of the C standard library's `printf`. It uses variadic arguments (`stdarg.h`), a format-string parser and a dispatch table with one handler per conversion. It was built at 1337 (42 Network). The only allowed functions are `write`, `malloc`, `free` and the `stdarg` macros.
 
-# ft_priuntf_42_cursus
+## Supported format
 
-Recodez votre printf !
+`%[flags][width][.precision]conversion`
 
-# Usage identique à la fonction printf :
+| | Supported |
+|---|---|
+| Conversions | `c` `s` `p` `d` `i` `u` `x` `X` `%` |
+| Flags | `-` (left-justify), `0` (zero-pad) |
+| Width / precision | numeric or `*` (taken from the arguments) |
 
-  • ft_printf("Mon texte a afficher %Mon_type Mon autre texte a afficher", argument de type Mon_type);
-  Principales Notions
+## How it works
 
-  • Creation d'un parser irréprochable,
-  • Initiation aux fonctions variadiques,
-  • Apprehension de tous les typages possibles en C.
-  Résumé du sujet :
+1. `ft_printf` walks the format string and writes literal text straight to stdout.
+2. On `%`, a parser fills a spec struct with the flags, width, precision and conversion.
+3. The spec is dispatched to a handler: `traitc.c`, `traits.c`, `traitp.c`, `traitd.c`, `traitu.c`, `traitx.c` or `traitpourcentage.c`.
+4. Each handler formats and pads its argument and returns the number of bytes written. The total is the return value, just like `printf`.
 
-  Quelque soit le langage de programmation considéré, la fonction printf (ou ses équivalents) est toujours une fonction extrêment pratique. La raison principale est bien évidemment le confort de formatage, et le support de types hétérogènes en nombre variable. Certaines variantes proposent même de pouvoir écrire la chaine de caractères résultat sur un file descriptor ou un stream particulier, ou bien même carrément de récuperer cette chaine sans l’imprimer. Bref, c’est une fonction incontournable que nous vous proposons de recoder aujourd’hui.
+## Build & use
 
-  La versatilité de la fonction printf en C représente pour nous un excellent exercice de programmation. D’une difficulté modérée, ce projet va vous permettre de découvrir les fonctions variadiques en C dans un contexte particulièrement adapté, et de voir un excellent exemple d’un “dispatcher” rudimentaire implémenté en C à l’aide d’un tableau de pointeurs sur fonctions.
+```bash
+git clone https://github.com/Alcheemiist/ft_printf_42_cursus.git
+cd ft_printf_42_cursus/ft_printf
+make                     # → libftprintf.a
+```
 
-# Objectifs
+```c
+#include "ft_printf.h"
 
-  • Vous devez recoder la fonction printf de la librairie C.
-  • Votre fonction s’appelera ft_printf et sera prototypée de la même façon que printf.
-  • Vous ne ferez pas la gestion de buffer présente dans la fonction printf de la librairie C.
-  • Vous devez gérer les conversions suivantes : sSpdDioOuUxXcC
-  • Vous devez gérer le %%
-  • Vous devez gérer les flags #0-+ et espace
-  • Vous devez gérer la taille minimum du champ
-  • Vous devez gérer la précision
-  • Vous devez gérer les flags hh h l ll j z
+int main(void)
+{
+    ft_printf("%-8s|%05d|%.3x|%p\n", "hello", 42, 255, (void *)main);
+}
+```
 
-# Fonctions autorisées
+```bash
+cc main.c -L. -lftprintf -I. && ./a.out
+```
 
-  ◦ write ◦ malloc ◦ free ◦ exit ◦ les fonctions du man 3 stdarg
+---
+
+Built by [Elmahdi Elaazmi](https://elaazmielmahdi.com) · 1337 / 42 Network core curriculum.
